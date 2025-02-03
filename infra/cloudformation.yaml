@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  ECSCluster:
+    Type: "AWS::ECS::Cluster"
+    Properties:
+      ClusterName: "ZayzoonCluster"
+
+  TaskDefinition:
+    Type: "AWS::ECS::TaskDefinition"
+    Properties:
+      Family: "ZayzoonApp"
+      ExecutionRoleArn: "arn:aws:iam::123456789012:role/ZayzoonExecutionRole"
+      NetworkMode: "awsvpc"
+      ContainerDefinitions:
+        - Name: "ZayzoonAppContainer"
+          Image: "123456789012.dkr.ecr.us-west-1.amazonaws.com/zayzoon-app:latest"
+          Memory: 512
+          Cpu: 256
+          PortMappings:
+            - ContainerPort: 8080

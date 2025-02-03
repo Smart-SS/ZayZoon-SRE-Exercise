@@ -1,0 +1,27 @@
+name: Deploy to AWS ECS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Login to AWS ECR
+        run: |
+          aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-west-1.amazonaws.com
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t zayzoon-app .
+          docker tag zayzoon-app 123456789012.dkr.ecr.us-west-1.amazonaws.com/zayzoon-app:latest
+          docker push 123456789012.dkr.ecr.us-west-1.amazonaws.com/zayzoon-app:latest
+
+      - name: Update ECS Service
+        run: |
+          aws ecs update-service --cluster ZayzoonCluster --service ZayzoonService --force-new-deployment
